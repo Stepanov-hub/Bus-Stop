@@ -59,7 +59,7 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 	int i = 0;
 	if (timetable.size() == 0)
 		return;
-	while (timetable[i].second.second < 60 && i<timetable.size()) {
+	while (timetable[i].second.second < 60) {
 		int i_f = timetable[i].second.first;
 		int i_s = timetable[i].second.second;
 		int pr_f, pr_s;
@@ -113,6 +113,8 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 			}
 		}
 		++i;
+		if (i == timetable.size())
+			break;
 	}
 	for (; i < timetable.size(); ++i) {
 		if (i == 0) {
@@ -136,7 +138,12 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 			}
 			else {
 				if (timetable[i].second.first < timetable[i - 1].second.first) {
-					erase_el(timetable, i);
+					if (timetable[i - 1].second.first >= 1380) {
+						if(timetable[i-1].second.first-timetable[i].second.first<60)
+							erase_el(timetable, i);
+					}
+					else
+						erase_el(timetable, i);
 				}
 				else {
 					if (timetable[i].second.second == timetable[i - 1].second.second) {
