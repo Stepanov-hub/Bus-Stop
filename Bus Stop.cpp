@@ -18,7 +18,7 @@ int main() {
 
 	int n = 0;
 
-	while (inf) {
+	while (inf) { //добавление данных из файла в структуру данных
 		std::string input;
 		inf >> input;
 		if (input == "")
@@ -30,7 +30,7 @@ int main() {
 			++n;
 	}
 
-	general.sort().task(Posh, Grotty);
+	general.sort().task(Posh, Grotty); //сортировка и выполнение задания
 
 	print(Posh, outf);
 	if(Posh.size()!=0)
@@ -40,7 +40,7 @@ int main() {
 	return 0;
 }
 
-void print(std::vector <std::pair<std::string, std::pair<int, int>>>& company, std::ofstream& outf) {
+void print(std::vector <std::pair<std::string, std::pair<int, int>>>& company, std::ofstream& outf) { //функция записи данных в выходной файл
 	for (int i = 0; i < company.size(); ++i) {
 		outf << company[i].first << ' ';
 		outf << convert(company[i].second.first) << ' ';
@@ -49,7 +49,7 @@ void print(std::vector <std::pair<std::string, std::pair<int, int>>>& company, s
 	}
 }
 
-std::string convert(int k) {
+std::string convert(int k) { //функция перевода времени из int в string
 	std::string time{ "" };
 	std::string s;
 	if (k / 60 < 10)
