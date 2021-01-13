@@ -142,7 +142,7 @@ void Timetable::task(std::vector <T>& Posh, std::vector <T>& Grotty) { //functio
 				else
 					erase_el(timetable, i);
 			}
-			else {//такой же как в цикле while
+			else {//same as for the previous while loop
 				if (timetable[i].arrive == timetable[i - 1].arrive) {
 					--i;
 					erase_el(timetable, i);
