@@ -3,7 +3,7 @@
 
 #include "Timetable.h"
 
-void print(std::vector <T>& company, std::ofstream& outf);
+void print(std::vector <schedule>& company, std::ofstream& outf);
 
 std::string convert(int k);
 
@@ -13,8 +13,8 @@ int main() {
 
 	Timetable general;
 
-	std::vector <T> Posh;
-	std::vector <T> Grotty;
+	std::vector <schedule> Posh;
+	std::vector <schedule> Grotty;
 
 	int n = 0;
 
@@ -40,7 +40,7 @@ int main() {
 	return 0;
 }
 
-void print(std::vector <T>& company, std::ofstream& outf) { //function for writing data to an output file
+void print(std::vector <schedule>& company, std::ofstream& outf) { //function for writing data to an output file
 	for (int i = 0; i < company.size(); ++i) {
 		outf << company[i].company << ' ';
 		outf << convert(company[i].leave) << ' ';

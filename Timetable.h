@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-struct T {
+struct schedule {
 	std::string company;
 	int leave;
 	int arrive;
@@ -12,12 +12,12 @@ struct T {
 class Timetable
 {
 private:
-	std::vector <T> timetable; 
+	std::vector <schedule> timetable; 
 public:
 	void add(std::string s, int n); //add data to structure
 
 	Timetable& sort(); //sort the data structure by arrival time
 
-	void task(std::vector <T>& Posh, std::vector <T>& Grotty); //function of the task
+	void task(std::vector <schedule>& Posh, std::vector <schedule>& Grotty); //function of the task
 };
 

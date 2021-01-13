@@ -14,11 +14,11 @@ void Timetable::add(std::string s, int n) {  //add data to structure
 	}
 }
 
-bool comp(T& v_1, T& v_2) { //comparator for sorting data structure by arrival time
+bool comp(schedule& v_1, schedule& v_2) { //comparator for sorting data structure by arrival time
 	return v_1.arrive < v_2.arrive;
 }
 
-bool comp_task(T& v_1, T& v_2) { //comparator for sorting the data structure by departure time
+bool comp_task(schedule& v_1, schedule& v_2) { //comparator for sorting the data structure by departure time
 	return v_1.leave < v_2.leave;
 }
 
@@ -27,20 +27,19 @@ Timetable& Timetable::sort() { //sort the data structure by arrival time
 	return *this;
 }
 
-void sort_task(std::vector <T>& timetable) { //sorting the data structure by departure time
+void sort_task(std::vector <schedule>& timetable) { //sorting the data structure by departure time
 	std::sort(timetable.begin(), timetable.end(), comp_task);
 }
 
-void erase_el(std::vector <T>& timetable, int& pos) { //removing an item from the data structure
-	std::vector <T>::iterator it;
+void erase_el(std::vector <schedule>& timetable, int& pos) { //removing an item from the data structure
+	std::vector <schedule>::iterator it;
 	it = timetable.begin() + pos;
 	timetable.erase(it);
 	--pos;
 }
 
-void Timetable::task(std::vector <T>& Posh, std::vector <T>& Grotty) { //function of the task
-
-	for (int b = 0; b < timetable.size(); ++b) { // this cycle is designed to remove from the data structure cases where the bus travels for more than an hour
+void del(std::vector <schedule>& timetable) {// this function is designed to remove from the data structure cases where the bus travels for more than an hour
+	for (int b = 0; b < timetable.size(); ++b) { 
 		if (timetable[b].arrive - timetable[b].leave > 60 || timetable[b].leave > timetable[b].arrive) {
 			if (timetable[b].leave > timetable[b].arrive) {
 				if (timetable[b].leave > 1380 && timetable[b].arrive < 60) {
@@ -57,21 +56,10 @@ void Timetable::task(std::vector <T>& Posh, std::vector <T>& Grotty) { //functio
 			}
 		}
 	}
+}
 
-	int i = 1;
-
-	if (timetable.size() == 0)
-		return;
-
-	if (timetable.size() == 1) {
-		if (timetable[0].company == "Posh")
-			Posh.push_back(timetable[0]);
-		else
-			Grotty.push_back(timetable[0]);
-		return;
-	}
-
-	while (timetable[i].arrive < 60) { //this cycle is designed to check cases in which the arrival time is less than 01:00, because their dispatch time can be up to 00:00
+void while_func(std::vector <schedule>& timetable, int& i) {//this function is designed to check cases in which the arrival time is less than 01:00, because their dispatch time can be up to 00:00
+	while (timetable[i].arrive < 60) { 
 		int i_leave = timetable[i].leave;
 		int i_arrive = timetable[i].arrive;
 		int pr_leave, pr_arrive;//pr-previous
@@ -115,10 +103,12 @@ void Timetable::task(std::vector <T>& Posh, std::vector <T>& Grotty) { //functio
 		if (i == timetable.size())
 			break;
 	}
+}
 
-	for (; i < timetable.size(); ++i) {//this cycle is for other cases
+void for_func(std::vector <schedule>& timetable, int& i) {//this function is for other cases
+	for (; i < timetable.size(); ++i) {
 
-		if (timetable[i].leave == timetable[i - 1].leave) {//same as for the previous while loop
+		if (timetable[i].leave == timetable[i - 1].leave) {//same as for the previous while_func loop
 			if (timetable[i].arrive == timetable[i - 1].arrive) {
 				if (timetable[i].company == "Grotty") {
 					erase_el(timetable, i);
@@ -133,16 +123,16 @@ void Timetable::task(std::vector <T>& Posh, std::vector <T>& Grotty) { //functio
 				erase_el(timetable, i);
 			}
 		}
-		else {//Here, unlike the while loop, we need an additional check to see if our previous element will have a send time after 23:00 
+		else {//Here, unlike the while_func loop, we need an additional check to see if our previous element will have a send time after 23:00 
 			if (timetable[i].leave < timetable[i - 1].leave) {//for example, our first element is 23:20 00:20 and the next one is 16:40 16:50. If there was a check, as in a while loop, I would remove the "i" 
-				if (timetable[i - 1].leave >= 1380) {         //element, although I really don't need to remove it. This check is needed precisely for this.
+				if (timetable[i - 1].leave >= 1380) {         //element, although I really don't need to remove it. schedulehis check is needed precisely for this.
 					if (timetable[i - 1].leave - timetable[i].leave < 60)
 						erase_el(timetable, i);
 				}
 				else
 					erase_el(timetable, i);
 			}
-			else {//same as for the previous while loop
+			else {//same as for the previous while_func loop
 				if (timetable[i].arrive == timetable[i - 1].arrive) {
 					--i;
 					erase_el(timetable, i);
@@ -151,11 +141,11 @@ void Timetable::task(std::vector <T>& Posh, std::vector <T>& Grotty) { //functio
 			}
 		}
 	}
+}
 
-	i = 0;
-
-	while (timetable[i].leave >= 1380 && timetable[i].arrive < 60) {//this loop is for a specific case, for example 23:40 23:59 the last element and 23:40 00:10 the zero element.Then we have to remove the zero
-		if (timetable[timetable.size() - 1].leave >= 1380 && timetable[timetable.size() - 1].arrive < 1440) { //element.
+void specific_func(std::vector <schedule>& timetable, int& i) {//this function is for a specific case, for example 23:40 23:59 the last element and 23:40 00:10 the zero element.schedulehen we have to remove the zero
+	while (timetable[i].leave >= 1380 && timetable[i].arrive < 60) {//element.
+		if (timetable[timetable.size() - 1].leave >= 1380 && timetable[timetable.size() - 1].arrive < 1440) { 
 			if (timetable[timetable.size() - 1].leave >= timetable[i].leave) {
 				erase_el(timetable, i);
 			}
@@ -168,6 +158,32 @@ void Timetable::task(std::vector <T>& Posh, std::vector <T>& Grotty) { //functio
 		}
 		++i;
 	}
+}
+
+void Timetable::task(std::vector <schedule>& Posh, std::vector <schedule>& Grotty) { //function of the task
+
+	del(timetable);
+
+	int i = 1;
+
+	if (timetable.size() == 0)
+		return;
+
+	if (timetable.size() == 1) {
+		if (timetable[0].company == "Posh")
+			Posh.push_back(timetable[0]);
+		else
+			Grotty.push_back(timetable[0]);
+		return;
+	}
+
+	while_func(timetable, i);
+
+	for_func(timetable, i);
+
+	i = 0;
+
+	specific_func(timetable, i);
 
 	sort_task(timetable);
 
