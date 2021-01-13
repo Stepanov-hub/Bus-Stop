@@ -2,49 +2,49 @@
 
 #include "Timetable.h"
 
-void Timetable::add(std::string s, int n) {  //функия добавления в структуру данных
+void Timetable::add(std::string s, int n) {  //add data to structure 
 	if (n == 0)
-		timetable.push_back({ s, {} });
+		timetable.push_back({ s,0,0 });
 	else {
 		int k = 60 * stoi(s.substr(0, 2)) + stoi(s.substr(3, 2));
-		if(n==1)
-			timetable[timetable.size() - 1].second.first=k;
+		if (n == 1)
+			timetable[timetable.size() - 1].leave = k;
 		else
-			timetable[timetable.size() - 1].second.second = k;
+			timetable[timetable.size() - 1].arrive = k;
 	}
 }
 
-bool comp(std::pair<std::string, std::pair<int, int>>& v_1, std::pair<std::string, std::pair<int, int>>& v_2) { //comparator для сортировки структуры данных по времени прибытия
-	return v_1.second.second < v_2.second.second;
+bool comp(T& v_1, T& v_2) { //comparator for sorting data structure by arrival time
+	return v_1.arrive < v_2.arrive;
 }
 
-bool comp_task(std::pair<std::string, std::pair<int, int>>& v_1, std::pair<std::string, std::pair<int, int>>& v_2) { //comparator для сортировки структуры данных по времени отправления
-	return v_1.second.first < v_2.second.first;
+bool comp_task(T& v_1, T& v_2) { //comparator for sorting the data structure by departure time
+	return v_1.leave < v_2.leave;
 }
 
-Timetable& Timetable::sort() { //сортировка структуры данных по времени прибытия
-	std::sort(timetable.begin(), timetable.end(),comp);
+Timetable& Timetable::sort() { //sort the data structure by arrival time
+	std::sort(timetable.begin(), timetable.end(), comp);
 	return *this;
 }
 
-void sort_task(std::vector <std::pair<std::string, std::pair<int, int>>>& timetable) { //сортировка структуры данных по времени отправления
+void sort_task(std::vector <T>& timetable) { //sorting the data structure by departure time
 	std::sort(timetable.begin(), timetable.end(), comp_task);
 }
 
-void erase_el(std::vector <std::pair<std::string, std::pair<int, int>>>& timetable, int& pos) { //удаление элемента из структуры данных
-	std::vector <std::pair<std::string, std::pair<int, int>>>::iterator it;
+void erase_el(std::vector <T>& timetable, int& pos) { //removing an item from the data structure
+	std::vector <T>::iterator it;
 	it = timetable.begin() + pos;
 	timetable.erase(it);
 	--pos;
 }
 
-void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& Posh, std::vector <std::pair<std::string, std::pair<int, int>>>& Grotty) { //функция самого задания
+void Timetable::task(std::vector <T>& Posh, std::vector <T>& Grotty) { //function of the task
 
-	for (int b = 0; b < timetable.size(); ++b) { // данный цикл предназначен для удаления из структуры данных случаев, где автобус едет больше часа
-		if (timetable[b].second.second - timetable[b].second.first > 60 || timetable[b].second.first > timetable[b].second.second) {
-			if (timetable[b].second.first > timetable[b].second.second) {
-				if (timetable[b].second.first > 1380 && timetable[b].second.second < 60) {
-					if (timetable[b].second.second + 1440 - timetable[b].second.first > 60) {
+	for (int b = 0; b < timetable.size(); ++b) { // this cycle is designed to remove from the data structure cases where the bus travels for more than an hour
+		if (timetable[b].arrive - timetable[b].leave > 60 || timetable[b].leave > timetable[b].arrive) {
+			if (timetable[b].leave > timetable[b].arrive) {
+				if (timetable[b].leave > 1380 && timetable[b].arrive < 60) {
+					if (timetable[b].arrive + 1440 - timetable[b].leave > 60) {
 						erase_el(timetable, b);
 					}
 				}
@@ -63,30 +63,30 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 	if (timetable.size() == 0)
 		return;
 
-	if(timetable.size()==1){
-		if (timetable[0].first == "Posh") 
+	if (timetable.size() == 1) {
+		if (timetable[0].company == "Posh")
 			Posh.push_back(timetable[0]);
 		else
 			Grotty.push_back(timetable[0]);
 		return;
 	}
 
-	while (timetable[i].second.second < 60) { //данный цикл предназначен для проверки случаев, в которых время прибытия меньше 01:00, т.к. их время отправки может быть до 00:00
-		int i_f = timetable[i].second.first;// _f- время отправки, _s-время прибытия
-		int i_s = timetable[i].second.second;
-		int pr_f, pr_s;//i-1 элемент
-		if (i_f < 60)
-			i_f += 1440;
-		i_s += 1440;
-		pr_f = timetable[i - 1].second.first;
-		pr_s = timetable[i - 1].second.second;
-		if (pr_f < 60)
-			pr_f += 1440;
-		if (pr_s < 60)
-			pr_s += 1440;
-		if (pr_f == i_f) { //если время отправки одинаковое
-			if (pr_s == i_s) { //если время прибытия и время отправки одинаковое
-				if (timetable[i - 1].first == "Grotty") {
+	while (timetable[i].arrive < 60) { //this cycle is designed to check cases in which the arrival time is less than 01:00, because their dispatch time can be up to 00:00
+		int i_leave = timetable[i].leave;
+		int i_arrive = timetable[i].arrive;
+		int pr_leave, pr_arrive;//pr-previous
+		if (i_leave < 60)
+			i_leave += 1440;
+		i_arrive += 1440;
+		pr_leave = timetable[i - 1].leave;
+		pr_arrive = timetable[i - 1].arrive;
+		if (pr_leave < 60)
+			pr_leave += 1440;
+		if (pr_arrive < 60)
+			pr_arrive += 1440;
+		if (pr_leave == i_leave) { //if dispatch time is the same
+			if (pr_arrive == i_arrive) { //if arrival time and departure time are the same
+				if (timetable[i - 1].company == "Grotty") {
 					--i;
 					erase_el(timetable, i);
 					++i;
@@ -95,16 +95,16 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 					erase_el(timetable, i);
 				}
 			}
-			else { //т.к. структура данных отсортирвоана по времени приезда и время отправки одинаковое, время прибытия разное, то мы должны удалить текущий элемент, т.к. его время прибытия больше.
+			else { //since the data structure is sorted by arrival time and departure time is the same, arrival time is different, then we must delete the current element, since its arrival time is bigger.
 				erase_el(timetable, i);
 			}
 		}
-		else {// время отправки разное
-			if (pr_f > i_f) {//время прибытия нашего i элемента больше или равно, значит если его время отправки меньше, то мы должны его удалить
+		else {// dispatch time is different
+			if (pr_leave > i_leave) {//the arrival time of "i" element is greater than or equal to "i-1", which means if its dispatch time is less, then we must delete it
 				erase_el(timetable, i);
 			}
 			else {
-				if (pr_s == i_s) {//время отправки нашего i элемента больше, значит если его время прибытия равно времени прибытия i-1 элемента, то мы должны удалить i-1 
+				if (pr_arrive == i_arrive) {//the dispatch time of our "i" element is greater, so if its arrival time is equal to the arrival time of the "i-1" element, then we must remove "i-1"
 					--i;
 					erase_el(timetable, i);
 					++i;
@@ -116,11 +116,11 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 			break;
 	}
 
-	for (; i < timetable.size(); ++i) {//данный цикл предназначен для других случаев
-		
-		if (timetable[i].second.first == timetable[i - 1].second.first) {//такой же как и для прошлого цикла while
-			if (timetable[i].second.second == timetable[i - 1].second.second) {
-				if (timetable[i].first == "Grotty") {
+	for (; i < timetable.size(); ++i) {//this cycle is for other cases
+
+		if (timetable[i].leave == timetable[i - 1].leave) {//same as for the previous while loop
+			if (timetable[i].arrive == timetable[i - 1].arrive) {
+				if (timetable[i].company == "Grotty") {
 					erase_el(timetable, i);
 				}
 				else {
@@ -133,17 +133,17 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 				erase_el(timetable, i);
 			}
 		}
-		else {//Тут в отличие от цикла while нужна доп. проверка на то, не будет ли у нашего предыдущего элемента время отправки после 23:00  
-			if (timetable[i].second.first < timetable[i - 1].second.first) {// к примеру наш первый элемент 23:20 00:20 а следующий 16:40 16:50. Если бы была проверка как в цикле while, я бы удалил элемент i, 
-				if (timetable[i - 1].second.first >= 1380) {               // хотя на самом деле удалять его не надо. Эта проверка именно для этого и нужна.
-					if (timetable[i - 1].second.first - timetable[i].second.first < 60)
+		else {//Here, unlike the while loop, we need an additional check to see if our previous element will have a send time after 23:00 
+			if (timetable[i].leave < timetable[i - 1].leave) {//for example, our first element is 23:20 00:20 and the next one is 16:40 16:50. If there was a check, as in a while loop, I would remove the "i" 
+				if (timetable[i - 1].leave >= 1380) {         //element, although I really don't need to remove it. This check is needed precisely for this.
+					if (timetable[i - 1].leave - timetable[i].leave < 60)
 						erase_el(timetable, i);
 				}
 				else
 					erase_el(timetable, i);
 			}
 			else {//такой же как в цикле while
-				if (timetable[i].second.second == timetable[i - 1].second.second) {
+				if (timetable[i].arrive == timetable[i - 1].arrive) {
 					--i;
 					erase_el(timetable, i);
 					++i;
@@ -152,11 +152,11 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 		}
 	}
 
-	i = 0; 
+	i = 0;
 
-	while (timetable[i].second.first >= 1380 && timetable[i].second.second < 60) {//данный цикл предназначен для конкретного случая, например 23:40 23:59 последний элемент и 23:40 00:10 нулевой элемент.Тогда мы должны
-		if (timetable[timetable.size() - 1].second.first >= 1380 && timetable[timetable.size() - 1].second.second<1440) { // удалить нулевой эоемент.
-			if (timetable[timetable.size() - 1].second.first >= timetable[i].second.first) {
+	while (timetable[i].leave >= 1380 && timetable[i].arrive < 60) {//this loop is for a specific case, for example 23:40 23:59 the last element and 23:40 00:10 the zero element.Then we have to remove the zero
+		if (timetable[timetable.size() - 1].leave >= 1380 && timetable[timetable.size() - 1].arrive < 1440) { //element.
+			if (timetable[timetable.size() - 1].leave >= timetable[i].leave) {
 				erase_el(timetable, i);
 			}
 			else {
@@ -172,7 +172,7 @@ void Timetable::task(std::vector <std::pair<std::string, std::pair<int, int>>>& 
 	sort_task(timetable);
 
 	for (int i = 0; i < timetable.size(); ++i) {
-		if (timetable[i].first == "Posh")
+		if (timetable[i].company == "Posh")
 			Posh.push_back(timetable[i]);
 		else
 			Grotty.push_back(timetable[i]);

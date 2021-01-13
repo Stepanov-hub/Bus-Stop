@@ -3,7 +3,7 @@
 
 #include "Timetable.h"
 
-void print(std::vector <std::pair<std::string, std::pair<int, int>>>& company, std::ofstream& outf);
+void print(std::vector <T>& company, std::ofstream& outf);
 
 std::string convert(int k);
 
@@ -13,12 +13,12 @@ int main() {
 
 	Timetable general;
 
-	std::vector <std::pair<std::string, std::pair<int, int>>> Posh;
-	std::vector <std::pair<std::string, std::pair<int, int>>> Grotty;
+	std::vector <T> Posh;
+	std::vector <T> Grotty;
 
 	int n = 0;
 
-	while (inf) { //добавление данных из файла в структуру данных
+	while (inf) { //adding data from a file to a data structure
 		std::string input;
 		inf >> input;
 		if (input == "")
@@ -30,26 +30,26 @@ int main() {
 			++n;
 	}
 
-	general.sort().task(Posh, Grotty); //сортировка и выполнение задания
+	general.sort().task(Posh, Grotty); //sorting and doing the job
 
 	print(Posh, outf);
-	if(Posh.size()!=0)
+	if (Posh.size() != 0)
 		outf << '\n';
 	print(Grotty, outf);
 
 	return 0;
 }
 
-void print(std::vector <std::pair<std::string, std::pair<int, int>>>& company, std::ofstream& outf) { //функция записи данных в выходной файл
+void print(std::vector <T>& company, std::ofstream& outf) { //function for writing data to an output file
 	for (int i = 0; i < company.size(); ++i) {
-		outf << company[i].first << ' ';
-		outf << convert(company[i].second.first) << ' ';
-		outf << convert(company[i].second.second);
+		outf << company[i].company << ' ';
+		outf << convert(company[i].leave) << ' ';
+		outf << convert(company[i].arrive);
 		outf << '\n';
 	}
 }
 
-std::string convert(int k) { //функция перевода времени из int в string
+std::string convert(int k) { //function for converting time from int to string
 	std::string time{ "" };
 	std::string s;
 	if (k / 60 < 10)
@@ -60,7 +60,7 @@ std::string convert(int k) { //функция перевода времени из int в string
 	if (k % 60 < 10)
 		s = "0" + std::to_string(k % 60);
 	else
-		s= std::to_string(k % 60);
+		s = std::to_string(k % 60);
 	time += s;
 	return time;
 }
